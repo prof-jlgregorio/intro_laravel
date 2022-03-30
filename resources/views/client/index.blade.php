@@ -21,7 +21,14 @@
                     <td>{{ $client->email }}</td>
                     <td> <a href=" {{ route('client.show', $client->id) }} ">Exibir</a> </td>
                     <td> <a href=" {{ route('client.edit', $client->id) }} ">Editar</a>  </td>
-                    <td> Excluir </td>
+                    <td> 
+                        <form method="POST" 
+                           action="{{ route('client.destroy',  $client->id ) }}">
+                           @csrf
+                           @method('DELETE')
+                           <input type="submit" value="Excluir">
+                        </form>
+                    </td>
                 </tr>
             @endforeach
         @else
