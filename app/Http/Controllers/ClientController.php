@@ -28,7 +28,8 @@ class ClientController extends Controller
         //return the view - using the view name
         //return view('client.index')->with('clients', session('clients'));
 
-        $clients = Client::all();
+        //$clients = Client::all();
+        $clients = Client::orderBy('name')->get();
 
         return view('client.index')->with('clients', $clients);
 
@@ -60,8 +61,7 @@ class ClientController extends Controller
         $client->save();
 
         return(redirect(route('client.index')));
-
-        
+  
     }
 
     /**
@@ -72,15 +72,16 @@ class ClientController extends Controller
      */
     public function show($id)
     {
-        $clients = session('clients');
-
-        $obj = $this->arrayFind($clients, $id);
-
-        if($obj){
-            return view('client.show')->with('client', $obj);
-        } else {
-            abort(404);
-        }
+       //..retrieve data from database - class Client uses static method find
+       $client = Client::find($id);
+       //..if $client is not null, then...
+       if($client){
+           //..return the view 'client.show' passing the retrieved object 
+           return view('client.show')->with('client', $client);
+       } else {
+           //..else, show the error 404 page
+           abort(404);
+       }
     }
 
     /**
@@ -91,12 +92,16 @@ class ClientController extends Controller
      */
     public function edit($id)
     {
-        $clients = session('clients');
-
-        $client = $this->arrayFind($clients, $id);
-
-        return view('client.edit')->with('client', $client);
-
+       //..retrieve data from database - class Client uses static method find
+       $client = Client::find($id);
+       //..if $client is not null, then...
+       if($client){
+           //..return the view 'client.edit' passing the retrieved object 
+           return view('client.edit')->with('client', $client);
+       } else {
+           //..else, show the error 404 page
+           abort(404);
+       }
     }
 
     /**
@@ -108,18 +113,17 @@ class ClientController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $clients = session('clients');
+        //..retrieve the client object from database
+        $client = Client::find($id);
 
-        $i = $this->arraySearch($clients, 'id', $id);
-
-        $clients[$i]->name = $request->input('name');
-        $clients[$i]->city = $request->input('city');
-        $clients[$i]->email = $request->input('email');
-
-        session(['clients' => $clients]);
-
+        //..set the new values with the incoming data from client request
+        $client->name = $request->input('name');
+        $client->city = $request->input('city');
+        $client->email = $request->input('email');
+        //..update the object
+        $client->save();
+        //..return to index page
         return(redirect(route('client.index')));
-
 
     }
 
@@ -131,15 +135,13 @@ class ClientController extends Controller
      */
     public function destroy($id)
     {
-        $clients = session('clients');
+        //..retrieve the client object from database
+        $client = Client::find($id);
+        //..call the delete method
+        $client->delete();
 
-        $i = $this->arraySearch($clients, 'id', $id);
-
-        if($i >= 0){
-            unset($clients[$i]);
-            $clients = array_values($clients);
-            session(['clients' => $clients]);            
-        }
+        //..aternative method to delete without use the find method
+        //Client::destroy($id);
 
         return(redirect(route('client.index')));
 
