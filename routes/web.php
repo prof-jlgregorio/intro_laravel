@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ProducController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,5 +45,7 @@ Route::get('/product/promotion', [ProductController::class, 'promotion']);
 
 //..creating the routes for ClientController - all methods
  Route::resource('/client', ClientController::class);
+
+ Route::resource('/product', ProductController::class);
 
 
